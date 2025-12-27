@@ -1,0 +1,8 @@
+title: 黄致焕 (Zhihuan Huang)
+description: Ph.D. Candidate at Peking University
+url: "https://nbdhhzh.github.io"
+markdown: kramdown
+permalink: /blog/:title/
+highlighter: rouge
+plugins:
+  - jekyll-seo-tag

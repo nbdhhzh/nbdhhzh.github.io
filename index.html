@@ -10,15 +10,23 @@
 </head>
 <body>
 
+<!-- Animated Background -->
+<div class="bg-animation">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+</div>
+
 <div class="container">
     <!-- Header -->
     <header>
         <div class="profile-text">
-            <h1>黄致焕 (Zhihuan Huang)</h1>
-            <h2>北京大学计算机系 博士在读</h2>
+            <h1 class="typing-text">黄致焕 (Zhihuan Huang)</h1>
+            <h2>北京大学计算机系 博士在读 (Ph.D. Candidate at PKU)</h2>
             <div class="contact-info">
-                <a href="mailto:zhihuan.huang@pku.edu.cn" class="contact-item"><i class="fas fa-envelope"></i> zhihuan.huang@pku.edu.cn</a>
+                <a href="mailto:zhihuan.huang@pku.edu.cn" class="contact-item"><i class="fas fa-envelope"></i> Email</a>
                 <a href="https://github.com/nbdhhzh" class="contact-item"><i class="fab fa-github"></i> GitHub</a>
+                <a href="/blog" class="contact-item" style="border-color: var(--accent-primary);"><i class="fas fa-blog"></i> Blog</a>
                 <span class="contact-item"><i class="fas fa-phone"></i> 18810951109</span>
             </div>
         </div>
@@ -27,16 +35,33 @@
         </div>
     </header>
 
+    <!-- About / News (Optional, brief summary from resume) -->
+    <section>
+        <div class="card">
+            <div class="card-content">
+                <p>
+                    我是北京大学计算机学院的博士生，师从<a href="https://cfcs.pku.edu.cn/english/people/faculty/yqkong/index.htm" target="_blank">孔雨晴教授</a>。我的研究兴趣包括<strong>大语言模型 (LLMs)</strong>、<strong>信息聚合 (Information Aggregation)</strong> 以及<strong>算法博弈论</strong>。
+                </p>
+                <p style="margin-top: 10px;">
+                    Currently, I am a Ph.D. candidate at Peking University, advised by Prof. Yuqing Kong. My research focuses on Large Language Models, Information Aggregation, and Algorithmic Game Theory.
+                </p>
+            </div>
+        </div>
+    </section>
+
     <!-- Education -->
     <section>
-        <h3 class="section-title"><i class="fas fa-graduation-cap" style="margin-right: 10px;"></i> 教育背景</h3>
+        <h3 class="section-title"><i class="fas fa-graduation-cap" style="margin-right: 15px;"></i> 教育背景 (Education)</h3>
         
         <div class="card">
             <div class="card-header">
                 <span class="card-title">北京大学 (Peking University)</span>
-                <span class="card-date">2021 - 至今</span>
+                <span class="card-date">2021 - Present</span>
             </div>
-            <div class="card-subtitle">计算机理论与软件 · 博士研究生</div>
+            <div class="card-subtitle">计算机理论与软件 · 博士 (Ph.D.)</div>
+            <div class="card-content">
+                所在实验室：前沿计算研究中心 (CFCS) / EconCS Lab
+            </div>
         </div>
 
         <div class="card">
@@ -44,7 +69,7 @@
                 <span class="card-title">北京大学 (Peking University)</span>
                 <span class="card-date">2017 - 2021</span>
             </div>
-            <div class="card-subtitle">计算机科学 · 本科</div>
+            <div class="card-subtitle">计算机科学 · 本科 (B.S.)</div>
             <div class="card-content">
                 <ul>
                     <li>图灵班 (Turing Class)</li>
@@ -54,52 +79,17 @@
         </div>
     </section>
 
-    <!-- Experience -->
-    <section>
-        <h3 class="section-title"><i class="fas fa-briefcase" style="margin-right: 10px;"></i> 实习与研究经历</h3>
-
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">字节跳动 Ads Core (筋斗云计划)</span>
-                <span class="card-date">2025.07 - 2025.10</span>
-            </div>
-            <div class="card-subtitle">算法实习生</div>
-            <div class="card-content">
-                <p>参与大推荐模型算法研发，主要负责用户行为序列Transformer Encoder模型Scaling Up和效果提升。优化了RoPE位置编码，解决了kv-cache不一致问题；通过Scaling Up和参数调优显著提升AUC；优化显存占用与训练吞吐。</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">小马智行 (Pony.ai)</span>
-                <span class="card-date">2021</span>
-            </div>
-            <div class="card-subtitle">规划与控制团队 · 实习生</div>
-            <div class="card-content">
-                <p>研究无人车非保护左转场景的博弈问题。</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">北京大学 EconCS 实验室</span>
-                <span class="card-date">2019 - 至今</span>
-            </div>
-            <div class="card-subtitle">博士研究生</div>
-            <div class="card-content">
-                <p>开展信息聚合机制研究，探索提升大语言模型（LLM）答案准确率的方法，涉及实验设计、数据分析与算法开发。</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Papers -->
     <section>
-        <h3 class="section-title"><i class="fas fa-scroll" style="margin-right: 10px;"></i> 学术论文</h3>
+        <h3 class="section-title"><i class="fas fa-scroll" style="margin-right: 15px;"></i> 学术论文 (Publications)</h3>
         
         <div class="card">
             <div class="card-header">
                 <span class="card-title">Algorithmic Robust Forecast Aggregation</span>
                 <span class="card-date">EC 2025</span>
+            </div>
+            <div class="author-list">
+                Y. Guo, J.D. Hartline, <span class="author-me">Z. Huang</span>, Y. Kong, A. Shah, F.Y. Yu
             </div>
         </div>
 
@@ -108,12 +98,18 @@
                 <span class="card-title">Eliciting Thinking Hierarchy without a Prior</span>
                 <span class="card-date">NeurIPS 2022</span>
             </div>
+            <div class="author-list">
+                Y. Kong, Y. Li, Y. Zhang, <span class="author-me">Z. Huang</span>, J. Wu
+            </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <span class="card-title">BONUS! Maximizing Surprise</span>
                 <span class="card-date">WWW 2022</span>
+            </div>
+            <div class="author-list">
+                <span class="author-me">Z. Huang</span>, Y. Kong, X. Liu, G. Schoenebeck, S. Xu
             </div>
         </div>
 
@@ -122,18 +118,22 @@
                 <span class="card-title">SURPRISE! and When to Schedule It</span>
                 <span class="card-date">IJCAI 2021</span>
             </div>
+            <div class="author-list">
+                <span class="author-me">Z. Huang*</span>, S. Xu*, Y. Shan, Y. Lu, Y. Kong, X. Liu, G. Schoenebeck
+            </div>
         </div>
     </section>
 
     <!-- Working Papers -->
     <section>
-        <h3 class="section-title"><i class="fas fa-pen-fancy" style="margin-right: 10px;"></i> 在投论文</h3>
+        <h3 class="section-title"><i class="fas fa-pen-fancy" style="margin-right: 15px;"></i> 在投论文 (Working Papers)</h3>
         
         <div class="card">
             <div class="card-header">
                 <span class="card-title">PMIScore: An Unsupervised Approach to Quantify Dialogue Engagement</span>
                 <span class="card-date">WWW 2026 (Under Review)</span>
             </div>
+             <!-- Authors unknown for PMIScore from provided text, leaving blank or inferred -->
         </div>
 
         <div class="card">
@@ -141,61 +141,163 @@
                 <span class="card-title">Robust Decision Aggregation with Quantal Response</span>
                 <span class="card-date">ICLR 2026 (Under Review)</span>
             </div>
+            <div class="author-list">
+                <span class="author-me">Z. Huang*</span>, Y. Xia*, Y. Kong
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience -->
+    <section>
+        <h3 class="section-title"><i class="fas fa-briefcase" style="margin-right: 15px;"></i> 实习与研究经历 (Experience)</h3>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">字节跳动 Ads Core (筋斗云计划)</span>
+                <span class="card-date">2025.07 - 2025.10</span>
+            </div>
+            <div class="card-subtitle">算法实习生 (Algorithm Intern)</div>
+            <div class="card-content">
+                <p>参与大推荐模型算法研发，主要负责用户行为序列Transformer Encoder模型Scaling Up和效果提升。</p>
+                <ul>
+                    <li>将位置RoPE替换为时序RoPE，解决kv-cache不一致问题，AUC +w15。</li>
+                    <li>Scaling Up：扩模型层数、维度、序列长度，AUC +w25。</li>
+                    <li>优化显存占用（-18G）与训练吞吐（v2模型训练吞吐为v1的40%但效果显著提升）。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">小马智行 (Pony.ai)</span>
+                <span class="card-date">2021</span>
+            </div>
+            <div class="card-subtitle">规划与控制团队 · 实习生 (PNC Intern)</div>
+            <div class="card-content">
+                <p>研究无人车非保护左转场景的博弈问题 (Game problem of driving an unprotected left turn)。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">北京大学 EconCS 实验室</span>
+                <span class="card-date">2019 - Present</span>
+            </div>
+            <div class="card-subtitle">研究助理 (Research Assistant)</div>
+            <div class="card-content">
+                <p>开展信息聚合机制研究，探索提升大语言模型（LLM）答案准确率的方法，涉及实验设计、数据分析与算法开发。</p>
+            </div>
         </div>
     </section>
 
     <!-- Projects -->
     <section>
-        <h3 class="section-title"><i class="fas fa-code-branch" style="margin-right: 10px;"></i> 项目经历</h3>
+        <h3 class="section-title"><i class="fas fa-code-branch" style="margin-right: 15px;"></i> 项目经历 (Projects)</h3>
+        
         <div class="card">
             <div class="card-header">
-                <span class="card-title">信息征集平台 (elicit.info)</span>
-                <span class="card-date">2019 - 至今</span>
+                <span class="card-title">海龟汤游戏 (Situation Puzzle Game)</span>
+                <span class="card-date">2025</span>
             </div>
             <div class="card-content">
-                <p>基于Django开发多功能科研平台，支持研讨会管理、在线实验与数据收集。平台曾在WINE 2020会议中用于演讲评分。</p>
+                <p>基于大语言模型(LLM)的网页交互式情景谜题游戏。</p>
+                <ul>
+                    <li>使用 JavaScript 开发后端逻辑，处理用户请求并与 LLM API 交互。</li>
+                    <li>探索 Prompt Engineering 技术以引导 LLM 在游戏语境下的回复。</li>
+                    <li>Link: <a href="http://elicit.info:8080/" target="_blank">http://elicit.info:8080/</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">信息征集平台 (Information Elicitation Platform)</span>
+                <span class="card-date">2019 - Present</span>
+            </div>
+            <div class="card-content">
+                <p>基于 Django 开发的多功能科研平台，支持研讨会管理、在线实验与数据收集。</p>
+                <ul>
+                    <li>曾用于 WINE 2020 会议的演讲评分系统。</li>
+                    <li>实现多级用户权限管理与实验数据聚合。</li>
+                    <li>Link: <a href="https://elicit.info/" target="_blank">https://elicit.info/</a></li>
+                </ul>
             </div>
         </div>
     </section>
 
     <!-- Skills -->
     <section>
-        <h3 class="section-title"><i class="fas fa-tools" style="margin-right: 10px;"></i> 专业技能</h3>
+        <h3 class="section-title"><i class="fas fa-tools" style="margin-right: 15px;"></i> 专业技能 (Skills)</h3>
         <div class="tags">
             <span class="tag">Python</span>
             <span class="tag">C++</span>
             <span class="tag">PyTorch</span>
             <span class="tag">TensorFlow</span>
             <span class="tag">Transformers</span>
-            <span class="tag">scikit-learn</span>
             <span class="tag">Django</span>
             <span class="tag">Git</span>
             <span class="tag">Large Language Models</span>
-            <span class="tag">Information Aggregation</span>
+            <span class="tag">Mechanism Design</span>
             <span class="tag">Reinforcement Learning</span>
         </div>
     </section>
 
     <!-- Honors -->
     <section>
-        <h3 class="section-title"><i class="fas fa-trophy" style="margin-right: 10px;"></i> 奖励荣誉</h3>
+        <h3 class="section-title"><i class="fas fa-trophy" style="margin-right: 15px;"></i> 奖励荣誉 (Honors)</h3>
         <div class="card">
             <div class="card-content">
                 <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2021</span> | ACM-ICPC 澳门赛区冠军</li>
-                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2021</span> | 北京大学优秀毕业生</li>
+                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2021</span> | ACM-ICPC 澳门赛区冠军 (Champion in ACM-ICPC Macau Regional)</li>
+                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2021</span> | 北京大学优秀毕业生 (Outstanding Graduate of PKU)</li>
                     <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2018/2019</span> | 北京大学程序设计竞赛一等奖</li>
                     <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2017</span> | ACM-ICPC 南宁赛区冠军</li>
-                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2015</span> | 全国信息学奥林匹克竞赛 (NOI) 金牌</li>
+                    <li style="margin-bottom: 0.5rem;"><span style="color: var(--accent-primary)">2015</span> | NOI 金牌 (Gold Medal in NOI)</li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <footer style="text-align: center; margin-top: 4rem; color: var(--text-muted); font-size: 0.8rem; padding-bottom: 2rem;">
+    <footer>
         <p>&copy; 2025 Zhihuan Huang. All rights reserved.</p>
     </footer>
 </div>
+
+<script>
+    // Scroll Reveal Animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
+    });
+
+    // 3D Tilt Effect for Cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -2; // Max rotation deg
+            const rotateY = ((x - centerX) / centerX) * 2;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+</script>
 
 </body>
 </html>

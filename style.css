@@ -215,6 +215,7 @@ section.visible {
     align-items: flex-start;
     gap: 1rem;
     margin-bottom: 0.8rem;
+    flex-wrap: nowrap;
 }
 
 .card-title {
@@ -222,6 +223,7 @@ section.visible {
     font-size: 1.2rem;
     color: #fff;
     flex: 1;
+    min-width: 0;
 }
 
 .card-subtitle {

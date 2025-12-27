@@ -212,15 +212,16 @@ section.visible {
 .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: flex-start;
+    gap: 1rem;
     margin-bottom: 0.8rem;
-    flex-wrap: wrap;
 }
 
 .card-title {
     font-weight: 700;
     font-size: 1.2rem;
     color: #fff;
+    flex: 1;
 }
 
 .card-subtitle {
@@ -237,6 +238,8 @@ section.visible {
     background: rgba(0,0,0,0.3);
     padding: 0.2rem 0.6rem;
     border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .card-content {
@@ -265,7 +268,8 @@ section.visible {
 .author-me {
     color: #fff;
     font-weight: 700;
-    /* Removed underline as requested */
+    border: none !important;
+    text-decoration: none !important;
 }
 
 /* Tags */

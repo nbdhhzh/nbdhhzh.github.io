@@ -134,13 +134,7 @@ header {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: var(--letter-spacing);
-}
-
-.typing-text {
-    border-right: 2px solid var(--accent-primary);
     white-space: nowrap;
-    overflow: hidden;
-    animation: blink 0.7s infinite;
 }
 
 @keyframes blink {
@@ -297,9 +291,6 @@ section.visible {
     font-size: 0.9rem;
     color: var(--text-muted);
     font-family: var(--font-mono);
-    background: rgba(0,0,0,0.3);
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-small);
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -402,14 +393,50 @@ footer {
     font-family: var(--font-family);
 }
 
-/* Responsive */
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+    .profile-text h1 {
+        font-size: 2.5rem;
+    }
+    .avatar {
+        width: 150px;
+        height: 150px;
+    }
+    .contact-item {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Responsive - Mobile */
 @media (max-width: 600px) {
     .card-header {
         flex-direction: column;
         gap: 0.5rem;
     }
     .profile-text h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
+        white-space: normal;
+    }
+    .profile-text h2 {
+        font-size: 1rem;
+    }
+    .avatar {
+        width: 120px;
+        height: 120px;
+    }
+    .contact-info {
+        gap: 0.6rem;
+    }
+    .contact-item {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.9rem;
+    }
+    .container {
+        padding: 1rem;
+    }
+    header {
+        padding: 2rem 0 var(--spacing-normal);
     }
     :root {
         --card-padding: 1.5rem;

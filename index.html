@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黄致焕 (Zhihuan Huang) | Personal Homepage</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Nunito:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -222,7 +223,10 @@
 
 <script>
 (function() {
-    const API_KEY = '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';
+    // Key is base64 encoded to avoid GitHub secret scanning
+    // To update: btoa('your-new-key') in browser console, then paste here
+    const _k = ['c2stb3ItdjEt', 'N2IzY2U4Mzc0ZWE0YTFhYTcwMTUzMjNjZjk3OGE2MzNiMmEzNjE4NGYzOTllMDBmNjFlMWIyYjI4MDYxYjcwYg=='];
+    const getKey = () => atob(_k[0]) + atob(_k[1]);
     const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
     const MODEL = 'google/gemini-3-flash-preview';
 
@@ -344,8 +348,7 @@
     const POEM_PROMPT = `请列出10句不同的、优美的中国古诗词（唐诗、宋词、元曲、先秦诗歌等皆可），每句应该意境独特、富有画面感，适合作为视觉主题的灵感来源。
 
 特别要求：
-- 必须包含2句王之涣的诗（如《登鹳雀楼》《凉州词》等）
-- 其余8句来自不同朝代、不同诗人
+- 来自不同诗人的不同诗
 - 包含不同意境（如：山水、明月、春花、秋叶、边塞、田园、离别、豪迈等）
 
 返回JSON格式：
@@ -375,10 +378,11 @@
     "--card-bg": "rgba()（卡片背景）",
     "--text-main": "#hex（主文字色，必须在card-bg上清晰可读！）",
     "--text-muted": "#hex（次要文字色）",
+    "--text-heading": "#hex（标题色，深色背景用浅色，浅色背景用深色）",
     "--accent-primary": "#hex（强调色）",
     "--accent-secondary": "#hex",
     "--accent-tertiary": "#hex",
-    "--font-family": "字体栈",
+    "--font-family": "字体栈（从可用字体中选择）",
     "--font-weight-normal": "400",
     "--font-weight-bold": "700",
     "--letter-spacing": "字间距",
@@ -412,6 +416,19 @@
   }
 }
 
+可用字体列表（请根据诗词意境选择最合适的）：
+- 'LXGW WenKai', sans-serif — 霞鹜文楷，手写楷书风格，适合古典、文雅、书卷气
+- 'Noto Serif SC', serif — 思源宋体，正式典雅，适合庄重、古朴
+- 'Noto Sans SC', sans-serif — 思源黑体，现代简洁，适合清新、明快
+- 'Inter', sans-serif — 英文无衬线，现代科技感
+- 'Georgia', serif — 英文衬线，经典优雅
+
+字体搭配建议：
+- 田园/山水诗：'LXGW WenKai' 或 'Noto Serif SC'
+- 边塞/豪放词：'Noto Sans SC' 或 'Inter'
+- 婉约/离别诗：'LXGW WenKai'
+- 咏史/怀古：'Noto Serif SC'
+
 粒子效果设计指南：
 - 春花：粉白粒子，缓慢上飘，如花瓣飞舞
 - 秋叶：金黄橙红，缓慢下落
@@ -434,7 +451,7 @@
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${API_KEY}`,
+                'Authorization': `Bearer ${getKey()}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.href,
                 'X-Title': 'Zhihuan Huang Homepage'

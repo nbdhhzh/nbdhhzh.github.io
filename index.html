@@ -246,6 +246,207 @@
         direction: 'up'
     };
 
+    let effectsConfig = {
+        wave: { enabled: false, colors: ['rgba(100,150,200,0.1)', 'rgba(150,100,200,0.1)'], speed: 0.002, amplitude: 50 },
+        meteor: { enabled: false, color: 'rgba(255,255,255,0.9)', frequency: 0.012, speed: 6, trailLength: 150 },
+        ripple: { enabled: false, color: 'rgba(255,255,255,0.3)', maxRadius: 100, duration: 1000 },
+        fog: { enabled: false, color: 'rgba(255,255,255,0.08)', count: 5, speed: 0.3 }
+    };
+
+    let meteors = [];
+    let ripples = [];
+    let fogClouds = [];
+    let waveOffset = 0;
+
+    function createMeteor() {
+        const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.5;
+        const speed = effectsConfig.meteor.speed + Math.random() * 3;
+        return {
+            x: Math.random() * canvas.width * 1.2 - canvas.width * 0.1,
+            y: -50 - Math.random() * 100,
+            length: 100 + Math.random() * 150,
+            speed: speed,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            alpha: 0.7 + Math.random() * 0.3,
+            sparkles: [],
+            twinkle: Math.random() * Math.PI * 2,
+            fadeIn: 0
+        };
+    }
+
+    function createFogCloud() {
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: 100 + Math.random() * 200,
+            vx: (Math.random() - 0.5) * effectsConfig.fog.speed,
+            vy: (Math.random() - 0.5) * effectsConfig.fog.speed * 0.3,
+            alpha: 0.03 + Math.random() * 0.05
+        };
+    }
+
+    function initFog() {
+        fogClouds = [];
+        for (let i = 0; i < effectsConfig.fog.count; i++) {
+            fogClouds.push(createFogCloud());
+        }
+    }
+
+    function drawWave() {
+        if (!effectsConfig.wave.enabled) return;
+        const colors = effectsConfig.wave.colors;
+        const amp = effectsConfig.wave.amplitude;
+        
+        colors.forEach((color, idx) => {
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for (let x = 0; x <= canvas.width; x += 10) {
+                const y = canvas.height - 100 - idx * 80 + 
+                    Math.sin((x * 0.003) + waveOffset + idx) * amp +
+                    Math.sin((x * 0.007) + waveOffset * 1.5) * amp * 0.5;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        });
+        waveOffset += effectsConfig.wave.speed;
+    }
+
+    function drawMeteors() {
+        if (!effectsConfig.meteor.enabled) return;
+        if (Math.random() < effectsConfig.meteor.frequency) {
+            meteors.push(createMeteor());
+        }
+        
+        meteors = meteors.filter(m => {
+            m.x += m.vx;
+            m.y += m.vy;
+            m.twinkle += 0.15;
+            if (m.fadeIn < 1) m.fadeIn += 0.08;
+            
+            if (m.x > canvas.width + 100 || m.y > canvas.height + 100 || m.x < -100) return false;
+            
+            const actualAlpha = m.alpha * Math.min(m.fadeIn, 1);
+            const angle = Math.atan2(m.vy, m.vx);
+            const tailX = m.x - Math.cos(angle) * m.length;
+            const tailY = m.y - Math.sin(angle) * m.length;
+            
+            if (Math.random() < 0.15) {
+                const sparkDist = Math.random() * m.length * 0.6;
+                m.sparkles.push({
+                    x: m.x - Math.cos(angle) * sparkDist + (Math.random() - 0.5) * 4,
+                    y: m.y - Math.sin(angle) * sparkDist + (Math.random() - 0.5) * 4,
+                    life: 0.8 + Math.random() * 0.2,
+                    size: 0.5 + Math.random() * 1.5
+                });
+            }
+            
+            m.sparkles = m.sparkles.filter(s => {
+                s.life -= 0.03;
+                if (s.life <= 0) return false;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${s.life * 0.6 * actualAlpha})`;
+                ctx.fill();
+                return true;
+            });
+            
+            const gradient = ctx.createLinearGradient(tailX, tailY, m.x, m.y);
+            gradient.addColorStop(0, 'rgba(255,255,255,0)');
+            gradient.addColorStop(0.5, `rgba(230,240,255,${actualAlpha * 0.2})`);
+            gradient.addColorStop(0.8, `rgba(240,248,255,${actualAlpha * 0.5})`);
+            gradient.addColorStop(1, `rgba(255,255,255,${actualAlpha * 0.9})`);
+            
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(m.x, m.y);
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            const headGlow = Math.sin(m.twinkle) * 0.15 + 0.85;
+            
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(220,235,255,${actualAlpha * 0.1 * headGlow})`;
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,255,255,${actualAlpha * 0.8 * headGlow})`;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = `rgba(200,220,255,${actualAlpha * 0.6})`;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            return true;
+        });
+    }
+
+    function drawRipples() {
+        if (!effectsConfig.ripple.enabled) return;
+        const now = Date.now();
+        
+        ripples = ripples.filter(r => {
+            const elapsed = now - r.startTime;
+            const progress = elapsed / effectsConfig.ripple.duration;
+            if (progress >= 1) return false;
+            
+            const radius = progress * effectsConfig.ripple.maxRadius;
+            const alpha = (1 - progress) * 0.5;
+            
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = effectsConfig.ripple.color.replace(/[\d.]+\)$/, alpha + ')');
+            ctx.lineWidth = 2 * (1 - progress);
+            ctx.stroke();
+            
+            return true;
+        });
+    }
+
+    function drawFog() {
+        if (!effectsConfig.fog.enabled) return;
+        
+        fogClouds.forEach(cloud => {
+            cloud.x += cloud.vx;
+            cloud.y += cloud.vy;
+            
+            if (cloud.x < -cloud.radius) cloud.x = canvas.width + cloud.radius;
+            if (cloud.x > canvas.width + cloud.radius) cloud.x = -cloud.radius;
+            if (cloud.y < -cloud.radius) cloud.y = canvas.height + cloud.radius;
+            if (cloud.y > canvas.height + cloud.radius) cloud.y = -cloud.radius;
+            
+            const gradient = ctx.createRadialGradient(
+                cloud.x, cloud.y, 0,
+                cloud.x, cloud.y, cloud.radius
+            );
+            gradient.addColorStop(0, effectsConfig.fog.color.replace(/[\d.]+\)$/, cloud.alpha + ')'));
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            
+            ctx.beginPath();
+            ctx.arc(cloud.x, cloud.y, cloud.radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+        });
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!effectsConfig.ripple.enabled) return;
+        if (Math.random() < 0.1) {
+            ripples.push({ x: e.clientX, y: e.clientY, startTime: Date.now() });
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        if (!effectsConfig.ripple.enabled) return;
+        ripples.push({ x: e.clientX, y: e.clientY, startTime: Date.now() });
+    });
+
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -294,6 +495,9 @@
     function drawParticles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
+        drawWave();
+        drawFog();
+        
         particles.forEach((p, i) => {
             p.x += p.vx;
             p.y += p.vy;
@@ -328,6 +532,9 @@
         ctx.globalAlpha = 1;
         ctx.shadowBlur = 0;
         
+        drawMeteors();
+        drawRipples();
+        
         animationId = requestAnimationFrame(drawParticles);
     }
 
@@ -341,7 +548,21 @@
         });
     }
 
+    function applyEffectsConfig(config) {
+        if (!config) return;
+        Object.keys(config).forEach(key => {
+            if (effectsConfig[key]) {
+                effectsConfig[key] = { ...effectsConfig[key], ...config[key] };
+            }
+        });
+        if (effectsConfig.fog.enabled) {
+            initFog();
+        }
+        canvas.style.pointerEvents = effectsConfig.ripple.enabled ? 'auto' : 'none';
+    }
+
     initParticles();
+    initFog();
     drawParticles();
     window.addEventListener('resize', initParticles);
 
@@ -413,8 +634,16 @@
     "linkDistance": 80,
     "glowSize": 8,
     "direction": "random 或 up 或 down"
+  },
+  "effects": {
+    "wave": { "enabled": true/false, "colors": ["rgba()", "rgba()"], "speed": 0.002, "amplitude": 50 },
+    "meteor": { "enabled": true/false, "color": "rgba(255,255,255,0.9)", "frequency": 0.012, "speed": 6 },
+    "ripple": { "enabled": true/false, "color": "rgba()", "maxRadius": 100, "duration": 1000 },
+    "fog": { "enabled": true/false, "color": "rgba()", "count": 5, "speed": 0.3 }
   }
 }
+
+重要：effects中请只选择1-2个特效启用（enabled: true），不要全部启用！
 
 可用字体列表（请根据诗词意境选择最合适的）：
 - 'LXGW WenKai', sans-serif — 霞鹜文楷，手写楷书风格，适合古典、文雅、书卷气
@@ -436,6 +665,20 @@
 - 流水：蓝绿色，横向流动
 - 边塞：土黄沙色，风沙飘动感
 - 夜空：白色星点，闪烁稀疏
+
+特效选择指南（选1-2个，根据诗意组合）：
+- wave（渐变波浪）：适合水/江河/海洋意象，如"春江潮水连海平"
+- meteor（流星）：适合夜空/思念/壮阔/边塞意象，如"星垂平野阔"
+- ripple（鼠标涟漪）：适合水波/雨滴/互动意象，如"微雨过，小荷翻"
+- fog（云雾）：适合朦胧/山水/仙境/离愁意象，如"云深不知处"
+
+特效搭配建议：
+- 山水诗：fog + wave（云雾+波浪）
+- 边塞诗：meteor + fog（流星+云雾）
+- 月夜诗：meteor（流星）
+- 离别诗：fog + ripple（云雾+涟漪）
+- 田园诗：wave + ripple（波浪+涟漪）
+- 仙境诗：fog + wave（云雾+波浪）
 
 颜色铁律：
 - 深色背景配浅色文字，浅色背景配深色文字
@@ -547,8 +790,18 @@
             initParticles();
         }
         
+        if (theme.effects) {
+            applyEffectsConfig(theme.effects);
+        }
+        
         console.log(`Theme: ${theme.themeName}`);
         console.log(theme.description);
+        if (theme.effects) {
+            const activeEffects = Object.entries(theme.effects)
+                .filter(([_, cfg]) => cfg.enabled)
+                .map(([name, _]) => name);
+            console.log(`Active effects: ${activeEffects.join(', ') || 'none'}`);
+        }
     }
 
     function applyFallbackTheme() {

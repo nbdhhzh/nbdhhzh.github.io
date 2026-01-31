@@ -566,22 +566,24 @@
     drawParticles();
     window.addEventListener('resize', initParticles);
 
-    const POEM_PROMPT = `请列出10句不同的、优美的中国古诗词（唐诗、宋词、元曲、先秦诗歌等皆可），每句应该意境独特、富有画面感，适合作为视觉主题的灵感来源。
+    let poemsData = null;
 
-特别要求：
-- 来自不同诗人的不同诗
-- 包含不同意境（如：山水、明月、春花、秋叶、边塞、田园、离别、豪迈等）
+    async function loadPoems() {
+        if (poemsData) return poemsData;
+        try {
+            const response = await fetch('poems.json');
+            poemsData = await response.json();
+            return poemsData;
+        } catch (error) {
+            console.error('Failed to load poems:', error);
+            return null;
+        }
+    }
 
-返回JSON格式：
-{
-  "poems": [
-    {"verse": "诗句1", "source": "诗名 · 作者"},
-    {"verse": "诗句2", "source": "诗名 · 作者"},
-    ...共10个
-  ]
-}
-
-只返回JSON，不要其他内容。`;
+    function seededRandom(seed) {
+        const x = Math.sin(seed) * 10000;
+        return x - Math.floor(x);
+    }
 
     function getThemePrompt(poem) {
         return `你是一位极富创意的视觉艺术家。请基于这句古诗，设计一个能完美诠释其意境的网页主题：
@@ -725,19 +727,16 @@
 
     async function getPoem() {
         try {
-            const result = await callAPI(POEM_PROMPT);
-            if (!result.poems || !Array.isArray(result.poems) || result.poems.length === 0) {
-                throw new Error('Invalid poems structure');
+            const poems = await loadPoems();
+            if (!poems || poems.length === 0) {
+                throw new Error('No poems loaded');
             }
-            const timeIndex = Date.now() % result.poems.length;
-            const poem = result.poems[timeIndex];
-            if (!poem.verse || !poem.source) {
-                throw new Error('Invalid poem structure');
-            }
-            console.log(`Selected poem ${timeIndex + 1}/${result.poems.length}: ${poem.verse}`);
+            const index = Math.floor(Math.random() * poems.length);
+            const poem = poems[index];
+            console.log(`Selected poem ${index + 1}/${poems.length}: ${poem.verse}`);
             return poem;
         } catch (error) {
-            console.error('Poem generation failed:', error);
+            console.error('Poem selection failed:', error);
             return null;
         }
     }

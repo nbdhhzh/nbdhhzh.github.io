@@ -5,12 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>黄致焕 (Zhihuan Huang) | Personal Homepage</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<!-- Animated Background removed -->
+<!-- Global Particle Background -->
+<canvas id="particles"></canvas>
+
+<!-- Loader -->
+<div id="loader">
+    <div class="loader-content">
+        <div class="loader-name">黄致焕</div>
+        <div class="loader-poem" id="loader-poem"></div>
+        <div class="loader-status" id="loader-status">墨韵初启<span class="loader-dots"></span></div>
+    </div>
+</div>
 
 <div class="container">
     <!-- Header -->
@@ -19,10 +29,12 @@
             <h1 class="typing-text">黄致焕 (Zhihuan Huang)</h1>
             <h2>北京大学计算机系 博士在读 (Ph.D. Candidate at PKU)</h2>
             <div class="contact-info">
-                <a href="mailto:zhihuan.huang@pku.edu.cn" class="contact-item"><i class="fas fa-envelope"></i> Email</a>
+                <span class="contact-item"><i class="fas fa-envelope"></i> zhihuan.huang@pku.edu.cn</span>
+                <span class="contact-item"><i class="fas fa-phone"></i> 18810951109</span>
+            </div>
+            <div class="contact-info" style="margin-top: 0.8rem;">
                 <a href="https://github.com/nbdhhzh" class="contact-item"><i class="fab fa-github"></i> GitHub</a>
                 <a href="/blog" class="contact-item" style="border-color: var(--accent-primary);"><i class="fas fa-blog"></i> Blog</a>
-                <span class="contact-item"><i class="fas fa-phone"></i> 18810951109</span>
             </div>
         </div>
         <div class="profile-image">
@@ -200,6 +212,8 @@
         </div>
     </section>
 
+    <!-- Theme Poem -->
+    <div id="theme-poem" class="theme-poem"></div>
 
     <footer>
         <p>&copy; 2025 Zhihuan Huang. All rights reserved.</p>
@@ -207,39 +221,393 @@
 </div>
 
 <script>
-    // Scroll Reveal Animation
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+(function() {
+    const API_KEY = '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';
+    const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+    const MODEL = 'google/gemini-3-flash-preview';
+
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+    
+    let particleConfig = {
+        colors: ['rgba(255,250,240,0.8)', 'rgba(245,235,220,0.7)', 'rgba(220,200,180,0.6)'],
+        lineColor: 'rgba(200, 185, 165, 0.15)',
+        sizeRange: [0.5, 2],
+        speedRange: [0.1, 0.4],
+        density: 15000,
+        linkDistance: 80,
+        glowSize: 8,
+        direction: 'up'
+    };
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    function createParticle() {
+        const [minSize, maxSize] = particleConfig.sizeRange;
+        const [minSpeed, maxSpeed] = particleConfig.speedRange;
+        const speed = minSpeed + Math.random() * (maxSpeed - minSpeed);
+        
+        let vx, vy;
+        switch(particleConfig.direction) {
+            case 'up':
+                vx = (Math.random() - 0.5) * speed;
+                vy = -Math.random() * speed - 0.05;
+                break;
+            case 'down':
+                vx = (Math.random() - 0.5) * speed;
+                vy = Math.random() * speed + 0.05;
+                break;
+            default:
+                vx = (Math.random() - 0.5) * speed;
+                vy = (Math.random() - 0.5) * speed;
+        }
+        
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: vx,
+            vy: vy,
+            radius: minSize + Math.random() * (maxSize - minSize),
+            color: particleConfig.colors[Math.floor(Math.random() * particleConfig.colors.length)],
+            alpha: Math.random() * 0.4 + 0.2
+        };
+    }
+
+    function initParticles() {
+        resizeCanvas();
+        particles = [];
+        const count = Math.floor((canvas.width * canvas.height) / particleConfig.density);
+        for (let i = 0; i < count; i++) {
+            particles.push(createParticle());
+        }
+    }
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.shadowBlur = particleConfig.glowSize;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+            
+            particles.slice(i + 1).forEach(p2 => {
+                const dx = p.x - p2.x;
+                const dy = p.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < particleConfig.linkDistance) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = particleConfig.lineColor;
+                    ctx.globalAlpha = (1 - dist / particleConfig.linkDistance) * 0.15;
+                    ctx.stroke();
+                }
+            });
+        });
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        
+        animationId = requestAnimationFrame(drawParticles);
+    }
+
+    function applyParticleConfig(config) {
+        if (!config) return;
+        particleConfig = { ...particleConfig, ...config };
+        particles.forEach(p => {
+            p.color = particleConfig.colors[Math.floor(Math.random() * particleConfig.colors.length)];
+            const [minSize, maxSize] = particleConfig.sizeRange;
+            p.radius = minSize + Math.random() * (maxSize - minSize);
+        });
+    }
+
+    initParticles();
+    drawParticles();
+    window.addEventListener('resize', initParticles);
+
+    const POEM_PROMPT = `请列出10句不同的、优美的中国古诗词（唐诗、宋词、元曲、先秦诗歌等皆可），每句应该意境独特、富有画面感，适合作为视觉主题的灵感来源。
+
+特别要求：
+- 必须包含2句王之涣的诗（如《登鹳雀楼》《凉州词》等）
+- 其余8句来自不同朝代、不同诗人
+- 包含不同意境（如：山水、明月、春花、秋叶、边塞、田园、离别、豪迈等）
+
+返回JSON格式：
+{
+  "poems": [
+    {"verse": "诗句1", "source": "诗名 · 作者"},
+    {"verse": "诗句2", "source": "诗名 · 作者"},
+    ...共10个
+  ]
+}
+
+只返回JSON，不要其他内容。`;
+
+    function getThemePrompt(poem) {
+        return `你是一位极富创意的视觉艺术家。请基于这句古诗，设计一个能完美诠释其意境的网页主题：
+
+「${poem.verse}」—— ${poem.source}
+
+请充分发挥想象力！将诗中的画面、情感、氛围转化为视觉语言。
+
+返回JSON：
+{
+  "themeName": "主题名（用诗中意象）",
+  "description": "一句话描述设计理念",
+  "variables": {
+    "--bg-color": "#hex（页面背景色）",
+    "--card-bg": "rgba()（卡片背景）",
+    "--text-main": "#hex（主文字色，必须在card-bg上清晰可读！）",
+    "--text-muted": "#hex（次要文字色）",
+    "--accent-primary": "#hex（强调色）",
+    "--accent-secondary": "#hex",
+    "--accent-tertiary": "#hex",
+    "--font-family": "字体栈",
+    "--font-weight-normal": "400",
+    "--font-weight-bold": "700",
+    "--letter-spacing": "字间距",
+    "--line-height": "行高",
+    "--radius-small": "小圆角",
+    "--radius-medium": "中圆角",
+    "--radius-large": "大圆角",
+    "--radius-avatar": "头像圆角",
+    "--border-width": "边框粗细",
+    "--shadow-glow": "rgba()",
+    "--shadow-card": "卡片阴影",
+    "--shadow-avatar": "头像阴影",
+    "--glow-intensity": "辉光强度",
+    "--blur-amount": "模糊程度",
+    "--card-padding": "卡片内边距",
+    "--section-gap": "章节间距",
+    "--transition-speed": "动画速度",
+    "--hover-scale": "悬停缩放",
+    "--hover-lift": "悬停上浮"
+  },
+  "bodyBackground": "背景CSS（使用渐变体现诗意）",
+  "particles": {
+    "colors": ["#hex1", "#hex2", "#hex3"],
+    "lineColor": "rgba()",
+    "sizeRange": [0.5, 2],
+    "speedRange": [0.1, 0.5],
+    "density": 15000,
+    "linkDistance": 80,
+    "glowSize": 8,
+    "direction": "random 或 up 或 down"
+  }
+}
+
+粒子效果设计指南：
+- 春花：粉白粒子，缓慢上飘，如花瓣飞舞
+- 秋叶：金黄橙红，缓慢下落
+- 明月：银白粒子，稀疏分布，宁静感
+- 流水：蓝绿色，横向流动
+- 边塞：土黄沙色，风沙飘动感
+- 夜空：白色星点，闪烁稀疏
+
+颜色铁律：
+- 深色背景配浅色文字，浅色背景配深色文字
+- text-main必须在card-bg上有足够对比度
+
+只返回JSON。`;
+    }
+
+    async function callAPI(prompt) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': window.location.href,
+                'X-Title': 'Zhihuan Huang Homepage'
+            },
+            body: JSON.stringify({
+                model: MODEL,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 1.0,
+                max_tokens: 2000
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        let content = data.choices[0].message.content;
+        
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('No JSON found in response');
+        
+        return JSON.parse(jsonMatch[0]);
+    }
+
+    async function getPoem() {
+        try {
+            const result = await callAPI(POEM_PROMPT);
+            if (!result.poems || !Array.isArray(result.poems) || result.poems.length === 0) {
+                throw new Error('Invalid poems structure');
             }
+            const randomIndex = Math.floor(Math.random() * result.poems.length);
+            const poem = result.poems[randomIndex];
+            if (!poem.verse || !poem.source) {
+                throw new Error('Invalid poem structure');
+            }
+            console.log(`Selected poem ${randomIndex + 1}/${result.poems.length}: ${poem.verse}`);
+            return poem;
+        } catch (error) {
+            console.error('Poem generation failed:', error);
+            return null;
+        }
+    }
+
+    async function generateTheme(poem) {
+        try {
+            const theme = await callAPI(getThemePrompt(poem));
+            if (!theme.variables || !theme.bodyBackground) {
+                throw new Error('Invalid theme structure');
+            }
+            return theme;
+        } catch (error) {
+            console.error('Theme generation failed:', error);
+            return null;
+        }
+    }
+
+    function displayLoaderPoem(poem) {
+        const loaderPoem = document.getElementById('loader-poem');
+        const loaderStatus = document.getElementById('loader-status');
+        
+        loaderPoem.innerHTML = `
+            <span class="poem-line">${poem.verse}</span>
+            <span class="poem-source">${poem.source}</span>
+        `;
+        loaderPoem.classList.add('visible');
+        loaderStatus.innerHTML = '丹青绘就<span class="loader-dots"></span>';
+    }
+
+    function displayThemePoem(poem) {
+        const themePoem = document.getElementById('theme-poem');
+        themePoem.innerHTML = `
+            <div class="poem-text">${poem.verse}</div>
+            <div class="poem-source">${poem.source}</div>
+        `;
+        setTimeout(() => themePoem.classList.add('visible'), 100);
+    }
+
+    function applyTheme(theme) {
+        const root = document.documentElement;
+        
+        Object.entries(theme.variables).forEach(([key, value]) => {
+            root.style.setProperty(key, value);
         });
-    }, { threshold: 0.1 });
+        
+        document.body.style.background = theme.bodyBackground;
+        
+        if (theme.particles) {
+            applyParticleConfig(theme.particles);
+            initParticles();
+        }
+        
+        console.log(`Theme: ${theme.themeName}`);
+        console.log(theme.description);
+    }
 
-    document.querySelectorAll('section').forEach(section => {
-        observer.observe(section);
-    });
+    function applyFallbackTheme() {
+        const themes = ['cyber', 'ocean', 'sunset', 'forest'];
+        const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+        document.documentElement.setAttribute('data-theme', randomTheme);
+        console.log(`Fallback theme: ${randomTheme}`);
+    }
 
-    // 3D Tilt Effect for Cards
-    document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+    function hideLoader() {
+        const loader = document.getElementById('loader');
+        const container = document.querySelector('.container');
+        
+        loader.classList.add('fade-out');
+        
+        setTimeout(() => {
+            loader.remove();
+            container.classList.add('visible');
+        }, 800);
+    }
+
+    function initPage() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -2;
+                const rotateY = ((x - centerX) / centerX) * 2;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+    }
+
+    async function main() {
+        const poem = await getPoem();
+        
+        if (poem) {
+            displayLoaderPoem(poem);
             
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+            const theme = await generateTheme(poem);
             
-            const rotateX = ((y - centerY) / centerY) * -2; // Max rotation deg
-            const rotateY = ((x - centerX) / centerX) * 2;
+            if (theme) {
+                applyTheme(theme);
+                displayThemePoem(poem);
+            } else {
+                applyFallbackTheme();
+            }
+        } else {
+            applyFallbackTheme();
+        }
+        
+        hideLoader();
+        initPage();
+    }
 
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-        });
-    });
+    main();
+})();
 </script>
 
 </body>
